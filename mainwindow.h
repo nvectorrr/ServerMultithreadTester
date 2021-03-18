@@ -61,6 +61,6 @@ private:
     QNetworkRequest request;
     QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> reply;
     bool testingAborted = false;
-    std::map<QString, QString> headers;
+    std::vector<std::pair<QString, QString>> headers;
 };
 #endif

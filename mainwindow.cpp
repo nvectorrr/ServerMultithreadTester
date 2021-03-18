@@ -132,7 +132,6 @@ void MainWindow::updateVisibleHeaders(QString newHost) {
 void MainWindow::startSendingRequests() {
     testingAborted = false;
 
-
     request.setUrl(url);
     for(auto elem : headers) {
         request.setRawHeader(elem.first.toUtf8().toBase64(), elem.second.toUtf8().toBase64());
@@ -142,43 +141,28 @@ void MainWindow::startSendingRequests() {
 
 void MainWindow::setRequestRawHeaders() {
     const QString rawHeaders = requestEditor->toPlainText();
-    std::vector<QString> lines;
-    QString param = "", value = "";
-    QString line;
-    int switchFlag = 0;
+    QStringList lines = rawHeaders.split("\n");
 
-    for(int i = 0; i < rawHeaders.length(); ++i) {
-        if(rawHeaders[i] == '\n' && rawHeaders[i + 1] == '\n')
-            break;
-        if(rawHeaders[i] == '\n') {
-            lines.push_back(line);
-            line = "";
-        } else {
-            line += rawHeaders[i];
-        }
-    }
+    for( int i = 0; i < lines.size(); ++i ) {
+        QString str = lines[i];
+        QString param = "", value = "";
+        int switchFlag = 0;
 
-    for(int i = 0; i < lines.size(); ++i) {
-        QString str = lines.at(i);
-        switchFlag = 0;
-        param = "";
-        value = "";
-
-        for(int j = 0; j < str.length(); ++j) {
-          if(switchFlag == 0) {
-              if(str.at(j) == ':') {
+        for( int j = 0; j < str.length(); ++j ) {
+          if( switchFlag == 0 ) {
+              if( str.at(j) == ':' ) {
                  switchFlag = 2;
                } else {
-                  param.append(str.at(j));
+                  param.append( str.at(j) );
                }
-           } else if(switchFlag == 2) {
+           } else if( switchFlag == 2 ) {
                switchFlag = 1;
            } else {
-               value.append(str.at(j));
+               value.append( str.at(j) );
            }
         }
-        if(!(param == "" && value == "")) {
-            headers.insert(std::pair<QString, QString>(param, value));
+        if( !(param == "" || value == "") ) {
+            headers.push_back( std::pair<QString, QString>(param, value) );
         }
     }
 }
